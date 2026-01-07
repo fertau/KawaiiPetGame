@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kawaii Pet Tamagotchi</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <header>
+            <div class="header-top">
+                <div class="level-indicator">Nivel <span id="level">1</span></div>
+                <div class="star-display">
+                    <span class="star-icon">⭐</span>
+                    <span id="star-count">0</span>
+                </div>
+                <div>
+                    <button id="btn-pet-picker" class="icon-btn" title="Cambiar Mascota">🐾</button>
+                    <button id="btn-stickers" class="icon-btn" title="Álbum de Stickers">📒</button>
+                </div>
+            </div>
+            <div class="xp-bar-container">
+                <div id="xp-bar" class="xp-bar-fill" style="width: 0%"></div>
+            </div>
+        </header>
+
+        <main id="pet-area">
+            <div class="environment-bg" id="bg-layer"></div>
+            <div id="pet-character" class="pet bounce">
+                <!-- Pet Image will be injected here -->
+                <img src="assets/pet_idle.png" alt="Pet" id="pet-img"
+                    onerror="this.src='https://placehold.co/200x200?text=Pet'">
+            </div>
+
+            <div id="status-effects">
+                <!-- Floating emojis or hearts will appear here -->
+            </div>
+        </main>
+
+        <section id="stats-panel">
+            <div class="stat-box">
+                <span class="icon">🍖</span>
+                <div class="bar-container">
+                    <div id="hunger-bar" class="bar-fill hunger" style="width: 80%"></div>
+                </div>
+            </div>
+            <div class="stat-box">
+                <span class="icon">💖</span>
+                <div class="bar-container">
+                    <div id="happiness-bar" class="bar-fill happiness" style="width: 80%"></div>
+                </div>
+            </div>
+            <div class="stat-box">
+                <span class="icon">⚡</span>
+                <div class="bar-container">
+                    <div id="energy-bar" class="bar-fill energy" style="width: 80%"></div>
+                </div>
+            </div>
+        </section>
+
+        <nav id="controls">
+            <button id="btn-feed" class="control-btn">
+                <div class="btn-icon">
+                    <img src="assets/icon_apple.png" alt="Feed">
+                </div>
+                <span>Comer</span>
+            </button>
+            <button id="btn-play" class="control-btn">
+                <div class="btn-icon">
+                    <img src="assets/icon_ball.png" alt="Play">
+                </div>
+                <span>Jugar</span>
+            </button>
+            <button id="btn-sleep" class="control-btn">
+                <div class="btn-icon">
+                    <img src="assets/icon_bed.png" alt="Sleep">
+                </div>
+                <span>Dormir</span>
+            </button>
+            <button id="btn-clean" class="control-btn">
+                <div class="btn-icon">
+                    <img src="assets/icon_soap.png" alt="Clean">
+                </div>
+                <span>Bañar</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modal for Stickers -->
+    <div id="sticker-modal" class="modal hidden">
+        <div class="modal-content sticker-book">
+            <h2>Álbum de Stickers</h2>
+            <div id="sticker-grid" class="sticker-grid">
+                <!-- Stickers injected here -->
+            </div>
+            <button id="sticker-close">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal for Messages/Level Up -->
+    <div id="message-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">¡Nivel Completado!</h2>
+            <p id="modal-msg">Tu mascota ha crecido.</p>
+            <button id="modal-close">¡Genial!</button>
+        </div>
+    </div>
+
+    <!-- Modal for Pet/Background Selection -->
+    <div id="pet-picker-modal" class="modal hidden">
+        <div class="modal-content customization-modal">
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="pet-tab">🐾 Mascota</button>
+                <button class="tab-btn" data-tab="bg-tab">🖼️ Fondos</button>
+            </div>
+
+            <div id="pet-tab" class="tab-content active">
+                <h2>Elige tu Mascota</h2>
+                <div id="pet-grid" class="sticker-grid">
+                    <!-- Pets injected here -->
+                </div>
+            </div>
+
+            <div id="bg-tab" class="tab-content">
+                <h2>Elige un Fondo</h2>
+                <div id="bg-grid" class="sticker-grid">
+                    <!-- Backgrounds injected here -->
+                </div>
+            </div>
+
+            <button class="close-modal-btn"
+                onclick="document.getElementById('pet-picker-modal').classList.add('hidden')">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
