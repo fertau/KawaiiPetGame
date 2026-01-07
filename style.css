@@ -27,7 +27,8 @@ body {
     height: 100vh;
     display: flex;
     justify-content: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #game-container {
@@ -715,47 +716,80 @@ header {
         font-size: 1.2rem;
     }
 
+    #game-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
     .header-top {
-        padding: 10px;
+        padding: 5px 10px;
         gap: 5px;
+    }
+
+    header {
+        padding: 5px 10px;
+    }
+
+    .level-indicator {
+        font-size: 1rem;
+        margin-bottom: 2px;
     }
 
     .level-indicator,
     .star-display {
-        padding: 4px 10px;
-        font-size: 0.85rem;
+        padding: 2px 8px;
+        font-size: 0.8rem;
     }
 
     .stats-panel {
-        gap: 8px;
+        gap: 2px;
+        padding: 5px 15px;
     }
 
     .stat-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: 0px;
+    }
+
+    #pet-area {
+        min-height: 160px;
+        flex: 1;
     }
 
     .pet-img {
         max-width: 180px;
+        margin-bottom: 0;
     }
 
     #controls {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        padding: 15px;
+        gap: 5px;
+        padding: 5px 15px 10px 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .control-btn {
+        width: 100%;
+        padding: 5px;
     }
 
     .action-btn {
-        padding: 12px;
-        font-size: 0.9rem;
+        padding: 8px;
+        font-size: 0.8rem;
     }
 
     .icon-btn {
         width: 35px;
         height: 35px;
         font-size: 1rem;
+    }
+
+    .btn-icon {
+        width: 45px;
+        height: 45px;
     }
 }
 
