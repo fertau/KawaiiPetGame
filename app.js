@@ -80,8 +80,19 @@ class KawaiiPetGame {
             tabContents: document.querySelectorAll('.tab-content'),
             // Splash Screen
             splashScreen: document.getElementById('splash-screen'),
-            startBtn: document.getElementById('btn-start')
+            startBtn: document.getElementById('btn-start'),
+            userNameInput: document.getElementById('user-name'),
+            userPasskeyInput: document.getElementById('user-passkey')
         };
+
+        // JSONBin Config (Key is public for this tutorial/demo)
+        // In a real app, this would be on a backend.
+        this.cloudProvider = {
+            url: 'https://api.jsonbin.io/v3/b',
+            apiKey: '$2a$10$7XyH6q6Yly0d0K.V8C1E0O7vjD9G.p8v6S.l5Y0e5U5V5V5V5V5V', // Placeholder
+            masterBin: '659a8c1f05ad6e77030e4ed5' // This acts as our "User Index"
+        };
+        this.currentUser = null;
 
         this.init();
     }
@@ -128,6 +139,12 @@ class KawaiiPetGame {
 
         // Splash Button
         this.ui.startBtn.addEventListener('click', () => {
+            const name = this.ui.userNameInput.value.trim();
+            const pass = this.ui.userPasskeyInput.value.trim();
+            if (name && pass) {
+                this.currentUser = { name, pass };
+                this.tryCloudSync();
+            }
             this.ui.splashScreen.classList.add('hidden');
         });
     }
@@ -415,8 +432,103 @@ class KawaiiPetGame {
         modalElement.classList.add('hidden');
     }
 
+    async tryCloudSync() {
+        if (!this.currentUser) return;
+        this.saveState(); // Ensure current state is local
+
+        // For this simple version, we'll use a public bin as an index
+        // In a private app, this would use a more secure lookup
+        try {
+            console.log('🔄 Sincronizando en la nube...');
+            const response = await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}/latest`, {
+                headers: { 'X-Master-Key': this.cloudProvider.apiKey }
+            });
+            const data = await response.json();
+            const users = data.record.users || {};
+            const userKey = `${this.currentUser.name}_${this.currentUser.pass}`;
+
+            if (users[userKey]) {
+                // User exists, pull their data
+                console.log('✅ Usuario encontrado, cargando partida...');
+                await this.loadFromCloud(users[userKey]);
+            } else {
+                // New user, create their bin
+                console.log('✨ Nuevo usuario, creando espacio en la nube...');
+                const binId = await this.createCloudBin();
+                users[userKey] = binId;
+                await this.updateMasterBin(users);
+                this.saveToCloud(); // Initial save
+            }
+        } catch (err) {
+            console.error('Error in Cloud Sync:', err);
+        }
+    }
+
+    async createCloudBin() {
+        const response = await fetch(this.cloudProvider.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': this.cloudProvider.apiKey,
+                'X-Bin-Private': false
+            },
+            body: JSON.stringify(this.stats)
+        });
+        const data = await response.json();
+        return data.metadata.id;
+    }
+
+    async updateMasterBin(users) {
+        await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': this.cloudProvider.apiKey
+            },
+            body: JSON.stringify({ users })
+        });
+    }
+
+    async saveToCloud() {
+        if (!this.currentUser) return;
+        const savedUsers = await this.getMasterBin();
+        const userKey = `${this.currentUser.name}_${this.currentUser.pass}`;
+        const binId = savedUsers[userKey];
+
+        if (binId) {
+            await fetch(`${this.cloudProvider.url}/${binId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': this.cloudProvider.apiKey
+                },
+                body: JSON.stringify(this.stats)
+            });
+            console.log('☁️ Partida guardada en la nube.');
+        }
+    }
+
+    async loadFromCloud(binId) {
+        const response = await fetch(`${this.cloudProvider.url}/${binId}/latest`, {
+            headers: { 'X-Master-Key': this.cloudProvider.apiKey }
+        });
+        const data = await response.json();
+        this.stats = { ...this.stats, ...data.record };
+        this.updateUI();
+        this.saveState(); // Sync local with cloud
+    }
+
+    async getMasterBin() {
+        const response = await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}/latest`, {
+            headers: { 'X-Master-Key': this.cloudProvider.apiKey }
+        });
+        const data = await response.json();
+        return data.record.users || {};
+    }
+
     saveState() {
         localStorage.setItem('kawaiiPetSave', JSON.stringify(this.stats));
+        if (this.currentUser) this.saveToCloud();
     }
 
     loadState() {
