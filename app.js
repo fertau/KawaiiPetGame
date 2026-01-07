@@ -77,7 +77,10 @@ class KawaiiPetGame {
             bgGrid: document.getElementById('bg-grid'),
             bgLayer: document.getElementById('bg-layer'),
             tabs: document.querySelectorAll('.tab-btn'),
-            tabContents: document.querySelectorAll('.tab-content')
+            tabContents: document.querySelectorAll('.tab-content'),
+            // Splash Screen
+            splashScreen: document.getElementById('splash-screen'),
+            startBtn: document.getElementById('btn-start')
         };
 
         this.init();
@@ -121,6 +124,11 @@ class KawaiiPetGame {
                 const target = tab.getAttribute('data-tab');
                 document.getElementById(target).classList.add('active');
             });
+        });
+
+        // Splash Button
+        this.ui.startBtn.addEventListener('click', () => {
+            this.ui.splashScreen.classList.add('hidden');
         });
     }
 
