@@ -7,6 +7,7 @@
     <title>Kawaii Pet Tamagotchi</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -28,14 +29,19 @@
     </div>
 
     <div id="game-container">
+        <!-- Flash Overlay -->
+        <div id="flash-overlay" class="flash-overlay"></div>
+
         <header>
             <div class="header-top">
-                <div class="level-indicator">Nivel <span id="level">1</span></div>
+                <div class="level-badge">Nivel <span id="level-display">1</span></div>
                 <div class="star-display">
                     <span class="star-icon">⭐</span>
                     <span id="star-count">0</span>
                 </div>
-                <div>
+                <div style="display:flex; gap:10px;">
+                    <button id="btn-camera" class="icon-btn" title="Tomar Foto">📸</button>
+                    <button id="btn-games" class="icon-btn" title="Minijuegos">🎮</button>
                     <button id="btn-pet-picker" class="icon-btn" title="Cambiar Mascota">🐾</button>
                     <button id="btn-stickers" class="icon-btn" title="Álbum de Stickers">📒</button>
                 </div>
@@ -167,7 +173,7 @@
                     </span>
                     <div>
                         <span class="game-name">Ta-te-ti</span>
-                        <small style="color:#ffa07a; display:block; font-size:0.7rem;">-10 ⭐</small>
+                        <small style="color:#777; display:block; font-size:0.7rem;">-10 ⚡ Energía</small>
                     </div>
                 </button>
                 <button class="minigame-btn" data-game="rps">
@@ -176,7 +182,7 @@
                     </span>
                     <div>
                         <span class="game-name">Piedra, Papel, Tijera</span>
-                        <small style="color:#ffa07a; display:block; font-size:0.7rem;">-10 ⭐</small>
+                        <small style="color:#777; display:block; font-size:0.7rem;">-10 ⚡ Energía</small>
                     </div>
                 </button>
                 <button class="minigame-btn" data-game="guess">
@@ -186,7 +192,7 @@
                     </span>
                     <div>
                         <span class="game-name">Adivina el Número</span>
-                        <small style="color:#ffa07a; display:block; font-size:0.7rem;">-10 ⭐</small>
+                        <small style="color:#777; display:block; font-size:0.7rem;">-10 ⚡ Energía</small>
                     </div>
                 </button>
             </div>
@@ -205,6 +211,15 @@
                 <!-- Game Canvas -->
             </div>
             <div id="game-status">¡Tu turno!</div>
+        </div>
+    </div>
+
+    <!-- Photo Album Modal -->
+    <div id="photo-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>📸 Álbum de Fotos</h2>
+            <div id="photo-grid" class="photo-grid"></div>
+            <button id="photo-close">Cerrar</button>
         </div>
     </div>
 

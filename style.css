@@ -1136,3 +1136,90 @@ header {
     transform: scale(1.1);
     z-index: 10;
 }
+
+/* Photo System */
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+}
+
+.flash-overlay.active {
+    opacity: 1;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.photo-card {
+    background: white;
+    padding: 10px 10px 30px 10px;
+    /* Polaroid bottom padding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: rotate(-2deg);
+    transition: transform 0.2s;
+    position: relative;
+    border-radius: 2px;
+}
+
+.photo-card:nth-child(even) {
+    transform: rotate(2deg);
+}
+
+.photo-card:hover {
+    transform: scale(1.05) rotate(0);
+    z-index: 10;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.photo-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid #eee;
+}
+
+.photo-date {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 0.7rem;
+    color: #888;
+    font-family: monospace;
+}
+
+.photo-delete {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff6b6b;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: none;
+    /* Only show on hover? Or always? Let's show on hover */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.photo-card:hover .photo-delete {
+    display: flex;
+}

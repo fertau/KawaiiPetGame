@@ -399,10 +399,16 @@ class KawaiiPetGame {
             <h2>Álbum de Stickers</h2>
             ${html}
             <button id="sticker-close" style="margin-top:20px;">Cerrar</button>
-        `;
-
         // Re-bind Close
         document.getElementById('sticker-close').addEventListener('click', () => this.ui.stickerModal.classList.add('hidden'));
+
+        // Camera & Album
+        document.getElementById('btn-camera').addEventListener('click', () => this.takePhoto());
+        document.getElementById('btn-album').addEventListener('click', () => this.openPhotoAlbum());
+        document.getElementById('photo-close').addEventListener('click', () => document.getElementById('photo-modal').classList.add('hidden'));
+
+        // Minigames
+        document.getElementById('btn-games').addEventListener('click', () => this.minigames.openMenu());
 
         // Bind Buy
         document.getElementById('btn-buy-pack').addEventListener('click', () => this.buyStickerPack());
@@ -412,14 +418,14 @@ class KawaiiPetGame {
         this.stickers.forEach(sticker => {
             const isUnlocked = this.stats.unlockedStickers.includes(sticker.id);
             const slot = document.createElement('div');
-            slot.className = `sticker-slot ${sticker.rarity} ${isUnlocked ? 'unlocked' : 'locked'}`;
+            slot.className = `sticker - slot ${ sticker.rarity } ${ isUnlocked ? 'unlocked' : 'locked' } `;
 
             if (isUnlocked) {
-                slot.innerHTML = `<span class="sticker-icon">${sticker.icon}</span>`;
-                slot.title = `${sticker.name} (${sticker.desc})`;
+                slot.innerHTML = `< span class="sticker-icon" > ${ sticker.icon }</span > `;
+                slot.title = `${ sticker.name } (${ sticker.desc })`;
                 slot.addEventListener('click', () => this.showModal(sticker.name, sticker.desc));
             } else {
-                slot.innerHTML = `<span class="sticker-icon">🔒</span>`;
+                slot.innerHTML = `< span class="sticker-icon" >🔒</span > `;
             }
             grid.appendChild(slot);
         });
@@ -448,10 +454,10 @@ class KawaiiPetGame {
         // Unlock Logic
         if (!this.stats.unlockedStickers.includes(sticker.id)) {
             this.stats.unlockedStickers.push(sticker.id);
-            this.showModal('¡Nuevo Sticker!', `¡Has conseguido: ${sticker.icon} ${sticker.name}!`);
+            this.showModal('¡Nuevo Sticker!', `¡Has conseguido: ${ sticker.icon } ${ sticker.name } !`);
         } else {
             this.gainXP(20);
-            this.showModal('Repetido...', `Ya tenías ${sticker.name}. Te damos +20 XP de consuelo.`);
+            this.showModal('Repetido...', `Ya tenías ${ sticker.name }. Te damos + 20 XP de consuelo.`);
         }
 
         this.saveState();
@@ -460,6 +466,73 @@ class KawaiiPetGame {
 
     spawnParticles(emoji, count = 1) {
         for (let i = 0; i < count; i++) this.spawnParticle(emoji);
+    }
+
+    // --- Photo System ---
+    takePhoto() {
+        if (this.stats.photos.length >= 6) {
+            this.showModal('Memoria Llena', 'El álbum está lleno (6/6). Borra alguna foto para tomar una nueva.');
+            return;
+        }
+
+        // Flash Effect
+        const flash = document.getElementById('flash-overlay');
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 200);
+
+        // Capture
+        const element = document.getElementById('pet-container');
+        html2canvas(element, { backgroundColor: null }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const date = new Date().toLocaleDateString();
+            this.stats.photos.push({ img: imgData, date: date });
+            this.saveState();
+            this.showModal('¡Foto Tomada!', 'Guardada en tu álbum de recuerdos. 📸');
+        });
+    }
+
+    openPhotoAlbum() {
+        const modal = document.getElementById('photo-modal');
+        const grid = document.getElementById('photo-grid');
+        grid.innerHTML = '';
+
+        if (this.stats.photos.length === 0) {
+            grid.innerHTML = '<p style="text-align:center; width:100%; color:#aaa;">No tienes fotos aún.</p>';
+        } else {
+            this.stats.photos.forEach((photo, index) => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                
+                const img = document.createElement('img');
+                img.src = photo.img;
+                
+                const date = document.createElement('div');
+                date.className = 'photo-date';
+                date.innerText = photo.date;
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'photo-delete';
+                delBtn.innerText = '🗑️';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.deletePhoto(index);
+                };
+
+                card.appendChild(img);
+                card.appendChild(date);
+                card.appendChild(delBtn);
+                grid.appendChild(card);
+            });
+        }
+        modal.classList.remove('hidden');
+    }
+
+    deletePhoto(index) {
+        if (confirm('¿Borrar esta foto?')) {
+            this.stats.photos.splice(index, 1);
+            this.saveState();
+            this.openPhotoAlbum(); // Refresh
+        }
     }
 
     spawnParticle(emoji) {
@@ -493,10 +566,10 @@ class KawaiiPetGame {
     }
 
     updateUI() {
-        this.ui.hungerBar.style.width = `${this.stats.hunger}%`;
-        this.ui.happinessBar.style.width = `${this.stats.happiness}%`;
-        this.ui.energyBar.style.width = `${this.stats.energy}%`;
-        this.ui.xpBar.style.width = `${(this.stats.xp / this.config.xpToLevelUp) * 100}%`;
+        this.ui.hungerBar.style.width = `${ this.stats.hunger }% `;
+        this.ui.happinessBar.style.width = `${ this.stats.happiness }% `;
+        this.ui.energyBar.style.width = `${ this.stats.energy }% `;
+        this.ui.xpBar.style.width = `${ (this.stats.xp / this.config.xpToLevelUp) * 100 }% `;
         this.ui.levelText.innerText = this.stats.level;
         this.ui.starText.innerText = this.stats.stars;
 
@@ -533,8 +606,8 @@ class KawaiiPetGame {
         const addTag = (btn, cost) => {
             const span = document.createElement('span');
             span.className = 'price-tag';
-            if (cost > 0) { span.innerText = `-${cost} ⭐`; span.classList.add('expensive'); }
-            else if (cost < 0) { span.innerText = `+${Math.abs(cost)} ⭐`; span.classList.add('affordable'); }
+            if (cost > 0) { span.innerText = `- ${ cost } ⭐`; span.classList.add('expensive'); }
+            else if (cost < 0) { span.innerText = `+ ${ Math.abs(cost) } ⭐`; span.classList.add('affordable'); }
             else { span.innerText = '¡Gratis! ✨'; span.classList.add('affordable'); }
             btn.appendChild(span);
         };
@@ -574,12 +647,12 @@ class KawaiiPetGame {
         // In a private app, this would use a more secure lookup
         try {
             console.log('🔄 Sincronizando en la nube...');
-            const response = await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}/latest`, {
+            const response = await fetch(`${ this.cloudProvider.url } /${this.cloudProvider.masterBin}/latest`, {
                 headers: { 'X-Master-Key': this.cloudProvider.apiKey }
             });
             const data = await response.json();
             const users = data.record.users || {};
-            const userKey = `${this.currentUser.name}_${this.currentUser.pass}`;
+            const userKey = `${ this.currentUser.name }_${ this.currentUser.pass } `;
 
             if (users[userKey]) {
                 // User exists, pull their data
@@ -613,67 +686,78 @@ class KawaiiPetGame {
     }
 
     async updateMasterBin(users) {
-        await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}`, {
+        await fetch(`${ this.cloudProvider.url }/${this.cloudProvider.masterBin}`, {
+        method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+                'X-Master-Key': this.cloudProvider.apiKey
+        },
+        body: JSON.stringify({ users })
+    });
+}
+
+    async saveToCloud() {
+    if (!this.currentUser) return;
+    const savedUsers = await this.getMasterBin();
+    const userKey = `${this.currentUser.name}_${this.currentUser.pass}`;
+    const binId = savedUsers[userKey];
+
+    if (binId) {
+        await fetch(`${this.cloudProvider.url}/${binId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Master-Key': this.cloudProvider.apiKey
             },
-            body: JSON.stringify({ users })
+            body: JSON.stringify(this.stats)
         });
+        console.log('☁️ Partida guardada en la nube.');
     }
-
-    async saveToCloud() {
-        if (!this.currentUser) return;
-        const savedUsers = await this.getMasterBin();
-        const userKey = `${this.currentUser.name}_${this.currentUser.pass}`;
-        const binId = savedUsers[userKey];
-
-        if (binId) {
-            await fetch(`${this.cloudProvider.url}/${binId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': this.cloudProvider.apiKey
-                },
-                body: JSON.stringify(this.stats)
-            });
-            console.log('☁️ Partida guardada en la nube.');
-        }
-    }
+}
 
     async loadFromCloud(binId) {
-        const response = await fetch(`${this.cloudProvider.url}/${binId}/latest`, {
-            headers: { 'X-Master-Key': this.cloudProvider.apiKey }
-        });
-        const data = await response.json();
-        this.stats = { ...this.stats, ...data.record };
-        this.updateUI();
-        this.saveState(); // Sync local with cloud
-    }
+    const response = await fetch(`${this.cloudProvider.url}/${binId}/latest`, {
+        headers: { 'X-Master-Key': this.cloudProvider.apiKey }
+    });
+    const data = await response.json();
+    this.stats = { ...this.stats, ...data.record };
+    this.updateUI();
+    this.saveState(); // Sync local with cloud
+}
 
     async getMasterBin() {
-        const response = await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}/latest`, {
-            headers: { 'X-Master-Key': this.cloudProvider.apiKey }
-        });
-        const data = await response.json();
-        return data.record.users || {};
-    }
+    const response = await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}/latest`, {
+        headers: { 'X-Master-Key': this.cloudProvider.apiKey }
+    });
+    const data = await response.json();
+    return data.record.users || {};
+}
 
-    saveState() {
-        localStorage.setItem('kawaiiPetSave', JSON.stringify(this.stats));
-        if (this.currentUser) this.saveToCloud();
-    }
+saveState() {
+    localStorage.setItem('kawaiiPetSave', JSON.stringify(this.stats));
+    if (this.currentUser) this.saveToCloud();
+}
 
-    loadState() {
-        const saved = localStorage.getItem('kawaiiPetSave');
-        if (saved) {
-            this.stats = { ...this.stats, ...JSON.parse(saved) };
-            if (!this.stats.unlockedStickers) this.stats.unlockedStickers = [0];
-            if (this.stats.stars === undefined) this.stats.stars = this.stats.coins || 50;
-            if (this.stats.currentPetId === undefined) this.stats.currentPetId = 0;
-            if (this.stats.currentBgId === undefined) this.stats.currentBgId = 'living';
-        }
+loadState() {
+    // Default stats if no save exists
+    this.stats = {
+        hunger: 50, happiness: 50, energy: 50, xp: 0, level: 1,
+        stars: 50, unlockedStickers: [0], currentPetId: 0, currentBgId: 'living',
+        photos: [] // New Photo Album
+    };
+
+    // Load State
+    const saved = localStorage.getItem('kawaiiPetSave');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        this.stats = { ...this.stats, ...parsed };
+        // Ensure photos array exists for old saves
+        if (!this.stats.photos) this.stats.photos = [];
+    } if (!this.stats.unlockedStickers) this.stats.unlockedStickers = [0];
+    if (this.stats.stars === undefined) this.stats.stars = this.stats.coins || 50;
+    if (this.stats.currentPetId === undefined) this.stats.currentPetId = 0;
+    if (this.stats.currentBgId === undefined) this.stats.currentBgId = 'living';
+}
     }
 }
 
@@ -724,15 +808,15 @@ class MinigameSystem {
     }
 
     startGame(type) {
-        // Star Cost Check (Arcade Style)
-        if (this.game.stats.stars < 10) {
-            this.game.showModal('Sin Estrellas', 'Necesitas 10 estrellas para jugar. ¡Cuida a tu mascota para ganar más!');
+        // Energy Cost Check (Standard Pet Game Loop)
+        if (this.game.stats.energy < 10) {
+            this.game.showModal('Sin Energía', 'Tu mascota está muy cansada para jugar. ¡Dale una siesta! 💤');
             this.game.animatePet('wobble');
             return;
         }
 
-        // Deduct Stars (Entry Fee)
-        this.game.stats.stars -= 10;
+        // Deduct Energy
+        this.game.stats.energy -= 10;
         this.game.updateUI();
 
         this.activeGame = type;
