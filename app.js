@@ -38,11 +38,61 @@ class KawaiiPetGame {
         ];
 
         this.stickers = [
-            { id: 0, name: 'Mi Mascota', img: 'assets/pet_idle.png', unlockLevel: 1 },
-            { id: 1, name: 'Manzana', img: 'assets/icon_apple.png', unlockLevel: 2 },
-            { id: 2, name: 'Pelota', img: 'assets/icon_ball.png', unlockLevel: 3 },
-            { id: 3, name: 'Cama', img: 'assets/icon_bed.png', unlockLevel: 4 },
-            { id: 4, name: 'Jabón', img: 'assets/icon_soap.png', unlockLevel: 5 },
+            // Common (60%)
+            { id: 1, name: 'Manzana Feliz', icon: '🍎', rarity: 'common', desc: 'Una manzana muy saludable.' },
+            { id: 2, name: 'Pelota Vieja', icon: '🎾', rarity: 'common', desc: 'Ideal para jugar a traer.' },
+            { id: 3, name: 'Calcetín', icon: '🧦', rarity: 'common', desc: '¿Quién perdió esto?' },
+            { id: 4, name: 'Galleta', icon: '🍪', rarity: 'common', desc: '¡Qué rica merienda!' },
+            { id: 5, name: 'Lápiz', icon: '✏️', rarity: 'common', desc: 'Para escribir cartas.' },
+            { id: 6, name: 'Flor Amarilla', icon: '🌼', rarity: 'common', desc: 'Huele a primavera.' },
+            { id: 7, name: 'Hueso', icon: '🦴', rarity: 'common', desc: 'El favorito de Doggy.' },
+            { id: 8, name: 'Pez', icon: '🐟', rarity: 'common', desc: 'El favorito de Kitty.' },
+            { id: 9, name: 'Zanahoria', icon: '🥕', rarity: 'common', desc: 'Ñam ñam, crujiente.' },
+            { id: 10, name: 'Helado', icon: '🍦', rarity: 'common', desc: '¡Cuidado que se derrite!' },
+            { id: 11, name: 'Sol', icon: '☀️', rarity: 'common', desc: 'Un día radiante.' },
+            { id: 12, name: 'Nube', icon: '☁️', rarity: 'common', desc: 'Esponjosa como algodón.' },
+            { id: 13, name: 'Gota', icon: '💧', rarity: 'common', desc: 'Mantente hidratado.' },
+            { id: 14, name: 'Hoja', icon: '🍃', rarity: 'common', desc: 'La trajo el viento.' },
+            { id: 15, name: 'Seta', icon: '🍄', rarity: 'common', desc: 'Parece una casita.' },
+            { id: 16, name: 'Pan', icon: '🍞', rarity: 'common', desc: 'Recién horneado.' },
+            { id: 17, name: 'Queso', icon: '🧀', rarity: 'common', desc: '¡Cuidado con los ratones!' },
+            { id: 18, name: 'Huevo', icon: '🥚', rarity: 'common', desc: '¿Qué saldrá de aquí?' },
+            { id: 19, name: 'Tocino', icon: '🥓', rarity: 'common', desc: 'Sssss... que rico huele.' },
+            { id: 20, name: 'Cereza', icon: '🍒', rarity: 'common', desc: 'Siempre vienen en pares.' },
+            { id: 21, name: 'Fresa', icon: '🍓', rarity: 'common', desc: 'Dulce y roja.' },
+            { id: 22, name: 'Uva', icon: '🍇', rarity: 'common', desc: 'Un racimo de sabor.' },
+            { id: 23, name: 'Sandía', icon: '🍉', rarity: 'common', desc: '¡A comer!' },
+            { id: 24, name: 'Limón', icon: '🍋', rarity: 'common', desc: '¡Qué ácido!' },
+            { id: 25, name: 'Pera', icon: '🍐', rarity: 'common', desc: 'Jugosa y verde.' },
+            { id: 26, name: 'Melocotón', icon: '🍑', rarity: 'common', desc: 'Suave como la piel.' },
+            { id: 27, name: 'Coco', icon: '🥥', rarity: 'common', desc: 'Duro por fuera.' },
+            { id: 28, name: 'Kiwi', icon: '🥝', rarity: 'common', desc: 'Peludo y verde.' },
+            { id: 29, name: 'Piña', icon: '🍍', rarity: 'common', desc: 'La reina de las frutas.' },
+            { id: 30, name: 'Banana', icon: '🍌', rarity: 'common', desc: '¡Energía pura!' },
+
+            // Rare (35%)
+            { id: 31, name: 'Gafas Retro', icon: '🕶️', rarity: 'rare', desc: '¡Mucho estilo!' },
+            { id: 32, name: 'Pato de Hule', icon: '🐤', rarity: 'rare', desc: 'Cua cua en el baño.' },
+            { id: 33, name: 'Mochila', icon: '🎒', rarity: 'rare', desc: 'Lista para la aventura.' },
+            { id: 34, name: 'Cámara', icon: '📷', rarity: 'rare', desc: '¡Sonríe!' },
+            { id: 35, name: 'Auriculares', icon: '🎧', rarity: 'rare', desc: 'Música para tus oídos.' },
+            { id: 36, name: 'Joystick', icon: '🎮', rarity: 'rare', desc: 'Gamer profesional.' },
+            { id: 37, name: 'Guitarra', icon: '🎸', rarity: 'rare', desc: 'Rock and Roll.' },
+            { id: 38, name: 'Pintura', icon: '🎨', rarity: 'rare', desc: 'Obra maestra.' },
+            { id: 39, name: 'Telescopio', icon: '🔭', rarity: 'rare', desc: 'Mirando las estrellas.' },
+            { id: 40, name: 'Microscopio', icon: '🔬', rarity: 'rare', desc: 'Ciencia divertida.' },
+            { id: 41, name: 'Globo', icon: '🎈', rarity: 'rare', desc: '¡Feliz cumpleaños!' },
+            { id: 42, name: 'Regalo', icon: '🎁', rarity: 'rare', desc: '¿Qué será?' },
+            { id: 43, name: 'Carta de Amor', icon: '💌', rarity: 'rare', desc: 'Para alguien especial.' },
+            { id: 44, name: 'Anillo', icon: '💍', rarity: 'rare', desc: 'Brilla mucho.' },
+            { id: 45, name: 'Diamante', icon: '💎', rarity: 'rare', desc: 'Invaluable.' },
+
+            // Legendary (5%)
+            { id: 46, name: 'Corona Real', icon: '👑', rarity: 'legendary', desc: 'Para el rey de la casa.' },
+            { id: 47, name: 'Trofeo', icon: '🏆', rarity: 'legendary', desc: '¡Eres el número 1!' },
+            { id: 48, name: 'Cohete', icon: '🚀', rarity: 'legendary', desc: '¡A la luna!' },
+            { id: 49, name: 'Unicornio', icon: '🦄', rarity: 'legendary', desc: '¡Es mágico y real!' },
+            { id: 50, name: 'Dragón', icon: '🐉', rarity: 'legendary', desc: 'Poder ancestral.' }
         ];
 
         this.costs = { feed: 10, clean: 5, play: -15, sleep: 0 };
@@ -333,19 +383,79 @@ class KawaiiPetGame {
 
     // ... Sticker Album Logic (same as before) ...
     openStickerAlbum() {
-        this.ui.stickerGrid.innerHTML = '';
+        // Stats Header
+        const unlockedCount = this.stats.unlockedStickers.length;
+        const totalCount = this.stickers.length;
+
+        let html = `
+            <div class="sticker-header">
+                <h3>Colección: ${unlockedCount}/${totalCount}</h3>
+                <button id="btn-buy-pack" class="start-btn small">Comprar Sobre (50 ⭐)</button>
+            </div>
+            <div id="sticker-grid" class="sticker-grid"></div>
+        `;
+
+        this.ui.stickerModal.querySelector('.modal-content').innerHTML = `
+            <h2>Álbum de Stickers</h2>
+            ${html}
+            <button id="sticker-close" style="margin-top:20px;">Cerrar</button>
+        `;
+
+        // Re-bind Close
+        document.getElementById('sticker-close').addEventListener('click', () => this.ui.stickerModal.classList.add('hidden'));
+
+        // Bind Buy
+        document.getElementById('btn-buy-pack').addEventListener('click', () => this.buyStickerPack());
+
+        const grid = this.ui.stickerModal.querySelector('#sticker-grid');
+
         this.stickers.forEach(sticker => {
             const isUnlocked = this.stats.unlockedStickers.includes(sticker.id);
             const slot = document.createElement('div');
-            slot.className = `sticker-slot ${isUnlocked ? 'unlocked' : ''}`;
-            const img = document.createElement('img');
-            img.src = sticker.img;
-            if (!isUnlocked) img.title = `Desbloquea en Nivel ${sticker.unlockLevel}`;
-            else img.title = sticker.name;
-            slot.appendChild(img);
-            this.ui.stickerGrid.appendChild(slot);
+            slot.className = `sticker-slot ${sticker.rarity} ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+            if (isUnlocked) {
+                slot.innerHTML = `<span class="sticker-icon">${sticker.icon}</span>`;
+                slot.title = `${sticker.name} (${sticker.desc})`;
+                slot.addEventListener('click', () => this.showModal(sticker.name, sticker.desc));
+            } else {
+                slot.innerHTML = `<span class="sticker-icon">🔒</span>`;
+            }
+            grid.appendChild(slot);
         });
+
         this.ui.stickerModal.classList.remove('hidden');
+    }
+
+    buyStickerPack() {
+        if (this.stats.stars < 50) {
+            this.showModal('Sin Estrellas', 'Necesitas 50 estrellas para comprar un sobre.');
+            return;
+        }
+
+        this.stats.stars -= 50;
+        this.updateUI();
+
+        // Gacha Logic
+        const roll = Math.random() * 100;
+        let rarity = 'common';
+        if (roll > 60) rarity = 'rare';
+        if (roll > 95) rarity = 'legendary';
+
+        const pool = this.stickers.filter(s => s.rarity === rarity);
+        const sticker = pool[Math.floor(Math.random() * pool.length)];
+
+        // Unlock Logic
+        if (!this.stats.unlockedStickers.includes(sticker.id)) {
+            this.stats.unlockedStickers.push(sticker.id);
+            this.showModal('¡Nuevo Sticker!', `¡Has conseguido: ${sticker.icon} ${sticker.name}!`);
+        } else {
+            this.gainXP(20);
+            this.showModal('Repetido...', `Ya tenías ${sticker.name}. Te damos +20 XP de consuelo.`);
+        }
+
+        this.saveState();
+        this.openStickerAlbum(); // Refresh
     }
 
     spawnParticles(emoji, count = 1) {
@@ -614,15 +724,15 @@ class MinigameSystem {
     }
 
     startGame(type) {
-        // Energy Check
-        if (this.game.stats.energy < 10) {
-            this.game.showModal('Sin Energía', 'Necesitas 10 de energía para jugar. ¡Duerme o come algo!');
+        // Star Cost Check (Arcade Style)
+        if (this.game.stats.stars < 10) {
+            this.game.showModal('Sin Estrellas', 'Necesitas 10 estrellas para jugar. ¡Cuida a tu mascota para ganar más!');
             this.game.animatePet('wobble');
             return;
         }
 
-        // Deduct Energy
-        this.game.stats.energy -= 10;
+        // Deduct Stars (Entry Fee)
+        this.game.stats.stars -= 10;
         this.game.updateUI();
 
         this.activeGame = type;
@@ -708,19 +818,44 @@ class MinigameSystem {
 
         setTimeout(() => {
             this.ui.gameArea.classList.remove('thinking');
-            const emptyIndices = this.tttBoard.map((v, i) => v === null ? i : null).filter(v => v !== null);
-            const move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)]; // Easy AI
 
-            this.tttBoard[move] = 'C';
-            const cells = this.ui.gameArea.querySelectorAll('.ttt-cell');
-            cells[move].innerText = '🦴'; // CPU Icon
+            // Smarter AI: 1. Try to Win, 2. Block Player, 3. Random
+            let move = this.findBestMove('C'); // Try to win
+            if (move === null) move = this.findBestMove('P'); // Block player
 
-            if (this.checkTTTWin('C')) { this.endGame('lose'); return; }
-            if (!this.tttBoard.includes(null)) { this.endGame('draw'); return; }
+            if (move === null) {
+                // Random fallback
+                const emptyIndices = this.tttBoard.map((v, i) => v === null ? i : null).filter(v => v !== null);
+                if (emptyIndices.length > 0) {
+                    move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+                }
+            }
+
+            if (move !== null) {
+                this.tttBoard[move] = 'C';
+                const cells = this.ui.gameArea.querySelectorAll('.ttt-cell');
+                cells[move].innerText = '🦴'; // CPU Icon
+
+                if (this.checkTTTWin('C')) { this.endGame('lose'); return; }
+                if (!this.tttBoard.includes(null)) { this.endGame('draw'); return; }
+            }
 
             this.ui.gameStatus.innerText = '¡Tu turno!';
             this.tttActive = true;
-        }, 1000); // Increased delay for dramatic effect
+        }, 1000);
+    }
+
+    findBestMove(player) {
+        const wins = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+        for (let combo of wins) {
+            const [a, b, c] = combo;
+            const vals = [this.tttBoard[a], this.tttBoard[b], this.tttBoard[c]];
+            // Check if 2 are 'player' and 1 is null
+            if (vals.filter(v => v === player).length === 2 && vals.includes(null)) {
+                return combo[vals.indexOf(null)];
+            }
+        }
+        return null;
     }
 
     checkTTTWin(p) {
@@ -731,6 +866,8 @@ class MinigameSystem {
     // --- Rock Paper Scissors ---
     setupRPS() {
         this.ui.gameTitle.innerText = 'Piedra, Papel, Tijera';
+        this.ui.gameArea.innerHTML = '<h3 style="margin-bottom:15px; color:#aaa;">Elige tu opción:</h3>'; // Title
+
         const opts = [
             { id: 'rock', name: 'Piedra', img: 'assets/rps_rock.png' },
             { id: 'paper', name: 'Papel', img: 'assets/rps_paper.png' },
@@ -743,7 +880,11 @@ class MinigameSystem {
         opts.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'rps-btn';
-            btn.innerHTML = `<img src="${opt.img}" alt="${opt.name}" style="width: 100%; height: 100%; object-fit: contain;">`;
+            btn.style.width = '80px'; // Slightly larger for images
+            btn.style.height = '80px';
+            btn.style.padding = '5px';
+
+            btn.innerHTML = `<img src="${opt.img}" alt="${opt.name}" style="width:100%; height:100%; object-fit:contain;">`;
             btn.addEventListener('click', () => this.handleRPSMove(opt.id));
             container.appendChild(btn);
         });
@@ -755,16 +896,22 @@ class MinigameSystem {
         const choices = ['rock', 'paper', 'scissors'];
         const cpuChoice = choices[Math.floor(Math.random() * 3)];
 
+        const getImg = (id) => `assets/rps_${id}.png`;
+
         this.ui.gameArea.innerHTML = `
             <div class="rps-result">
                 <div class="rps-choice">
                     <span>Tú</span>
-                    <div class="rps-icon player">${this.getIcon(playerChoice)}</div>
+                    <div class="rps-icon player" style="width:100px; height:100px; padding:10px;">
+                        <img src="${getImg(playerChoice)}" style="width:100%; height:100%; object-fit:contain;">
+                    </div>
                 </div>
                 <div class="vs">VS</div>
                 <div class="rps-choice">
                     <span>Rival</span>
-                    <div class="rps-icon cpu">${this.getIcon(cpuChoice)}</div>
+                    <div class="rps-icon cpu" style="width:100px; height:100px; padding:10px;">
+                        <img src="${getImg(cpuChoice)}" style="width:100%; height:100%; object-fit:contain;">
+                    </div>
                 </div>
             </div>
             <button id="rps-retry" class="start-btn small" style="margin-top:15px; font-size:1rem;">Jugar de nuevo</button>
