@@ -147,6 +147,12 @@ class KawaiiPetGame {
             }
             this.ui.splashScreen.classList.add('hidden');
         });
+
+        // Minigames
+        this.minigameSystem = new MinigameSystem(this);
+        document.getElementById('btn-games').addEventListener('click', () => {
+            this.minigameSystem.openMenu();
+        });
     }
 
     startLoop() {
@@ -555,6 +561,238 @@ class KawaiiPetGame {
             if (this.stats.stars === undefined) this.stats.stars = this.stats.coins || 50;
             if (this.stats.currentPetId === undefined) this.stats.currentPetId = 0;
             if (this.stats.currentBgId === undefined) this.stats.currentBgId = 'living';
+        }
+    }
+}
+
+// Minigame System Class
+class MinigameSystem {
+    constructor(gameInstance) {
+        this.game = gameInstance; // Reference to main game for rewards
+        this.activeGame = null;
+        this.difficulty = 'easy'; // Default
+
+        this.ui = {
+            menuModal: document.getElementById('minigames-menu-modal'),
+            gameModal: document.getElementById('active-game-modal'),
+            gameTitle: document.getElementById('game-title'),
+            gameArea: document.getElementById('game-area'),
+            gameStatus: document.getElementById('game-status'),
+            menuBtns: document.querySelectorAll('.minigame-btn'),
+            closeMenuBtn: document.getElementById('minigames-close'),
+            exitGameBtn: document.getElementById('game-exit')
+        };
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        // Open Game
+        this.ui.menuBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const gameType = btn.getAttribute('data-game');
+                this.startGame(gameType);
+            });
+        });
+
+        // Close Menu
+        this.ui.closeMenuBtn.addEventListener('click', () => {
+            this.ui.menuModal.classList.add('hidden');
+        });
+
+        // Exit Game
+        this.ui.exitGameBtn.addEventListener('click', () => {
+            this.ui.gameModal.classList.add('hidden');
+            this.activeGame = null;
+        });
+    }
+
+    openMenu() {
+        this.ui.menuModal.classList.remove('hidden');
+    }
+
+    startGame(type) {
+        this.activeGame = type;
+        this.ui.menuModal.classList.add('hidden');
+        this.ui.gameModal.classList.remove('hidden');
+        this.ui.gameArea.innerHTML = ''; // Clear previous
+        this.ui.gameStatus.innerText = '¡Tu turno! 🎲';
+
+        if (type === 'tictactoe') this.setupTicTacToe();
+        if (type === 'rps') this.setupRPS();
+        if (type === 'guess') this.setupGuessNumber();
+    }
+
+    endGame(result) {
+        let msg = '';
+        let stars = 0;
+        let xp = 0;
+
+        if (result === 'win') {
+            msg = '¡Ganaste! 🎉';
+            stars = 20;
+            xp = 10;
+            this.game.spawnParticles('⭐', 5);
+        } else if (result === 'draw') {
+            msg = '¡Empate! 🤝';
+            stars = 5;
+            xp = 2;
+        } else {
+            msg = '¡Perdiste! 😢';
+            stars = 2;
+            xp = 1;
+        }
+
+        this.ui.gameStatus.innerText = `${msg} (+${stars} ⭐)`;
+
+        // Reward
+        this.game.stats.stars += stars;
+        this.game.gainXP(xp);
+        this.game.updateUI();
+        this.game.saveState();
+
+        // Delay to allow seeing result
+        setTimeout(() => {
+            // Optional: Show "Play Again" or Close
+            this.game.animatePet(result === 'win' ? 'bounce' : 'wobble');
+        }, 1500);
+    }
+
+    // --- Tic-Tac-Toe ---
+    setupTicTacToe() {
+        this.ui.gameTitle.innerText = 'Ta-te-ti';
+        this.tttBoard = Array(9).fill(null);
+        const grid = document.createElement('div');
+        grid.className = 'ttt-grid';
+
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('button');
+            cell.className = 'ttt-cell';
+            cell.dataset.index = i;
+            cell.addEventListener('click', () => this.handleTTTMove(i, cell));
+            grid.appendChild(cell);
+        }
+        this.ui.gameArea.appendChild(grid);
+        this.tttActive = true;
+    }
+
+    handleTTTMove(index, cell) {
+        if (!this.tttActive || this.tttBoard[index]) return;
+
+        // Player Move
+        this.tttBoard[index] = 'P';
+        cell.innerText = '🐾'; // Player Icon
+
+        if (this.checkTTTWin('P')) { this.tttActive = false; this.endGame('win'); return; }
+        if (!this.tttBoard.includes(null)) { this.tttActive = false; this.endGame('draw'); return; }
+
+        // CPU Move
+        this.ui.gameStatus.innerText = 'Pensando... 🤔';
+        this.tttActive = false;
+        setTimeout(() => {
+            const emptyIndices = this.tttBoard.map((v, i) => v === null ? i : null).filter(v => v !== null);
+            const move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)]; // Easy AI
+
+            this.tttBoard[move] = 'C';
+            const cells = this.ui.gameArea.querySelectorAll('.ttt-cell');
+            cells[move].innerText = '🦴'; // CPU Icon
+
+            if (this.checkTTTWin('C')) { this.endGame('lose'); return; }
+            if (!this.tttBoard.includes(null)) { this.endGame('draw'); return; }
+
+            this.ui.gameStatus.innerText = '¡Tu turno!';
+            this.tttActive = true;
+        }, 600);
+    }
+
+    checkTTTWin(p) {
+        const wins = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+        return wins.some(c => this.tttBoard[c[0]] === p && this.tttBoard[c[1]] === p && this.tttBoard[c[2]] === p);
+    }
+
+    // --- Rock Paper Scissors ---
+    setupRPS() {
+        this.ui.gameTitle.innerText = 'Piedra, Papel, Tijera';
+        const opts = [
+            { id: 'rock', name: 'Piedra', img: 'assets/rps_rock.png' },
+            { id: 'paper', name: 'Papel', img: 'assets/rps_paper.png' },
+            { id: 'scissors', name: 'Tijera', img: 'assets/rps_scissors.png' }
+        ];
+
+        const container = document.createElement('div');
+        container.className = 'rps-options';
+
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'rps-btn';
+            btn.innerHTML = `<img src="${opt.img}" alt="${opt.name}" style="width: 100%; height: 100%; object-fit: contain;">`;
+            btn.addEventListener('click', () => this.handleRPSMove(opt.id));
+            container.appendChild(btn);
+        });
+
+        this.ui.gameArea.appendChild(container);
+    }
+
+    handleRPSMove(playerChoice) {
+        const choices = ['rock', 'paper', 'scissors'];
+        const cpuChoice = choices[Math.floor(Math.random() * 3)];
+
+        // Visual feedback would go here (simple version)
+        this.ui.gameStatus.innerText = `Tú: ${this.getIcon(playerChoice)} vs CPU: ${this.getIcon(cpuChoice)}`;
+
+        if (playerChoice === cpuChoice) {
+            this.endGame('draw');
+        } else if (
+            (playerChoice === 'rock' && cpuChoice === 'scissors') ||
+            (playerChoice === 'paper' && cpuChoice === 'rock') ||
+            (playerChoice === 'scissors' && cpuChoice === 'paper')
+        ) {
+            this.endGame('win');
+        } else {
+            this.endGame('lose');
+        }
+    }
+
+    getIcon(type) {
+        return { 'rock': '✊', 'paper': '✋', 'scissors': '✌️' }[type];
+    }
+
+    // --- Guess Number ---
+    setupGuessNumber() {
+        this.ui.gameTitle.innerText = 'Adivina (1-15)';
+        this.targetNumber = Math.floor(Math.random() * 15) + 1;
+        this.guessesLeft = 4;
+
+        const grid = document.createElement('div');
+        grid.className = 'guess-grid';
+
+        for (let i = 1; i <= 15; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'guess-btn';
+            btn.innerText = i;
+            btn.dataset.val = i;
+            btn.addEventListener('click', () => this.handleGuess(i, btn));
+            grid.appendChild(btn);
+        }
+        this.ui.gameArea.appendChild(grid);
+    }
+
+    handleGuess(val, btn) {
+        if (this.guessesLeft <= 0) return;
+
+        btn.classList.add('disabled');
+        this.guessesLeft--;
+
+        if (val === this.targetNumber) {
+            this.endGame('win');
+        } else {
+            if (this.guessesLeft === 0) {
+                this.ui.gameStatus.innerText = `¡Perdiste! Era el ${this.targetNumber}`;
+                this.endGame('lose');
+            } else {
+                const hint = val < this.targetNumber ? '¡Es más alto! ⬆️' : '¡Es más bajo! ⬇️';
+                this.ui.gameStatus.innerText = `${hint} (Quedan ${this.guessesLeft})`;
+            }
         }
     }
 }

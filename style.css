@@ -767,26 +767,26 @@ header {
         flex-direction: row;
         flex-wrap: nowrap;
         justify-content: space-around;
-        gap: 5px;
-        padding: 15px 5px;
+        gap: 2px;
+        padding: 15px 2px;
         width: 100%;
         box-sizing: border-box;
     }
 
     .control-btn {
         flex: 1;
-        padding: 5px 2px;
+        padding: 5px 1px;
         min-width: 0;
     }
 
     .action-btn {
         padding: 5px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }
 
     .btn-icon {
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
     }
 
     .icon-btn {
@@ -798,13 +798,6 @@ header {
 
 /* Extra small screens / landscape */
 @media (max-height: 500px) {
-    .splash-content {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 20px;
-    }
-
     .splash-logo {
         width: 100px;
         margin-bottom: 0;
@@ -814,4 +807,149 @@ header {
         margin-bottom: 0;
         padding: 10px;
     }
+}
+
+/* Minigames Styles */
+.minigame-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.minigame-btn {
+    background: #f8f8f8;
+    border: 2px solid #eee;
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.minigame-btn:hover {
+    background: #fff0f5;
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.game-icon {
+    font-size: 1.5rem;
+}
+
+.game-name {
+    font-weight: bold;
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+.game-canvas {
+    width: 90%;
+    max-width: 400px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+#game-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#game-status {
+    margin-top: 15px;
+    font-weight: bold;
+    color: var(--color-primary);
+    min-height: 24px;
+}
+
+/* Tic-Tac-Toe Board */
+.ttt-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    background: var(--color-secondary);
+    padding: 5px;
+    border-radius: 10px;
+    width: 200px;
+    height: 200px;
+}
+
+.ttt-cell {
+    background: white;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.ttt-cell:hover {
+    background: #f0f0f0;
+}
+
+/* RPS Buttons */
+.rps-options {
+    display: flex;
+    gap: 15px;
+}
+
+.rps-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #eee;
+    background: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.rps-btn:active,
+.rps-btn.selected {
+    transform: scale(0.9);
+    border-color: var(--color-primary);
+    background: #fff0f5;
+}
+
+/* Guess Number Grid */
+.guess-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+.guess-btn {
+    padding: 10px;
+    font-size: 1.1rem;
+    background: white;
+    border: 2px solid var(--color-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--color-secondary);
+}
+
+.guess-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    border-color: #ddd;
+    color: #ddd;
 }
