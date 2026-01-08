@@ -154,6 +154,43 @@
         </div>
     </div>
 
+    <!-- Minigames Menu Modal -->
+    <div id="minigames-menu-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🎮 Minijuegos</h2>
+            <p style="margin-bottom: 20px;">¡Gana XP y Estrellitas!</p>
+            <div class="minigame-list">
+                <button class="minigame-btn" data-game="tictactoe">
+                    <span class="game-icon">❌⭕</span>
+                    <span class="game-name">Ta-te-ti</span>
+                </button>
+                <button class="minigame-btn" data-game="rps">
+                    <span class="game-icon">✌️</span>
+                    <span class="game-name">Piedra, Papel, Tijera</span>
+                </button>
+                <button class="minigame-btn" data-game="guess">
+                    <span class="game-icon">🔢</span>
+                    <span class="game-name">Adivina el Número</span>
+                </button>
+            </div>
+            <button id="minigames-close" class="close-modal-btn">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Active Game Modal -->
+    <div id="active-game-modal" class="modal hidden">
+        <div class="modal-content game-canvas">
+            <div class="game-header">
+                <h3 id="game-title">Juego</h3>
+                <button id="game-exit" style="background:none;border:none;font-size:1.2rem;cursor:pointer;">❌</button>
+            </div>
+            <div id="game-area">
+                <!-- Game Canvas -->
+            </div>
+            <div id="game-status">¡Tu turno!</div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 

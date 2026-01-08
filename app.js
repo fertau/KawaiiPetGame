@@ -110,7 +110,8 @@ class KawaiiPetGame {
 
     bindEvents() {
         this.ui.btnFeed.addEventListener('click', () => this.action('feed'));
-        this.ui.btnPlay.addEventListener('click', () => this.action('play'));
+        // this.ui.btnPlay.addEventListener('click', () => this.action('play')); // Old simple play
+        this.ui.btnPlay.addEventListener('click', () => this.minigameSystem.openMenu()); // New Minigames Entry
         this.ui.btnSleep.addEventListener('click', () => this.action('sleep'));
         this.ui.btnClean.addEventListener('click', () => this.action('clean'));
 
@@ -150,9 +151,10 @@ class KawaiiPetGame {
 
         // Minigames
         this.minigameSystem = new MinigameSystem(this);
-        document.getElementById('btn-games').addEventListener('click', () => {
-            this.minigameSystem.openMenu();
-        });
+        // Joystick button removed, used btnPlay instead
+        // document.getElementById('btn-games').addEventListener('click', () => {
+        //     this.minigameSystem.openMenu();
+        // });
     }
 
     startLoop() {
@@ -612,6 +614,17 @@ class MinigameSystem {
     }
 
     startGame(type) {
+        // Energy Check
+        if (this.game.stats.energy < 10) {
+            this.game.showModal('Sin Energía', 'Necesitas 10 de energía para jugar. ¡Duerme o come algo!');
+            this.game.animatePet('wobble');
+            return;
+        }
+
+        // Deduct Energy
+        this.game.stats.energy -= 10;
+        this.game.updateUI();
+
         this.activeGame = type;
         this.ui.menuModal.classList.add('hidden');
         this.ui.gameModal.classList.remove('hidden');
@@ -689,7 +702,12 @@ class MinigameSystem {
         // CPU Move
         this.ui.gameStatus.innerText = 'Pensando... 🤔';
         this.tttActive = false;
+
+        // Visual "Thinking" feedback
+        this.ui.gameArea.classList.add('thinking');
+
         setTimeout(() => {
+            this.ui.gameArea.classList.remove('thinking');
             const emptyIndices = this.tttBoard.map((v, i) => v === null ? i : null).filter(v => v !== null);
             const move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)]; // Easy AI
 
@@ -702,7 +720,7 @@ class MinigameSystem {
 
             this.ui.gameStatus.innerText = '¡Tu turno!';
             this.tttActive = true;
-        }, 600);
+        }, 1000); // Increased delay for dramatic effect
     }
 
     checkTTTWin(p) {
@@ -737,8 +755,26 @@ class MinigameSystem {
         const choices = ['rock', 'paper', 'scissors'];
         const cpuChoice = choices[Math.floor(Math.random() * 3)];
 
-        // Visual feedback would go here (simple version)
-        this.ui.gameStatus.innerText = `Tú: ${this.getIcon(playerChoice)} vs CPU: ${this.getIcon(cpuChoice)}`;
+        this.ui.gameArea.innerHTML = `
+            <div class="rps-result">
+                <div class="rps-choice">
+                    <span>Tú</span>
+                    <div class="rps-icon player">${this.getIcon(playerChoice)}</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="rps-choice">
+                    <span>Rival</span>
+                    <div class="rps-icon cpu">${this.getIcon(cpuChoice)}</div>
+                </div>
+            </div>
+            <button id="rps-retry" class="start-btn small" style="margin-top:15px; font-size:1rem;">Jugar de nuevo</button>
+        `;
+
+        // Re-bind retry
+        document.getElementById('rps-retry').addEventListener('click', () => {
+            this.ui.gameArea.innerHTML = '';
+            this.setupRPS();
+        });
 
         if (playerChoice === cpuChoice) {
             this.endGame('draw');
@@ -754,6 +790,8 @@ class MinigameSystem {
     }
 
     getIcon(type) {
+        // Using Emojis as fallback since asset generation failed
+        // rock_1767832430205.png is available but we need consistent set
         return { 'rock': '✊', 'paper': '✋', 'scissors': '✌️' }[type];
     }
 
@@ -761,7 +799,10 @@ class MinigameSystem {
     setupGuessNumber() {
         this.ui.gameTitle.innerText = 'Adivina (1-15)';
         this.targetNumber = Math.floor(Math.random() * 15) + 1;
-        this.guessesLeft = 4;
+        this.guessesLeft = 3;
+        this.maxGuesses = 3;
+
+        this.updateGuessStatus();
 
         const grid = document.createElement('div');
         grid.className = 'guess-grid';
@@ -777,23 +818,43 @@ class MinigameSystem {
         this.ui.gameArea.appendChild(grid);
     }
 
+    updateGuessStatus() {
+        this.ui.gameStatus.innerText = `Intentos restantes: ${this.guessesLeft}`;
+    }
+
     handleGuess(val, btn) {
         if (this.guessesLeft <= 0) return;
 
         btn.classList.add('disabled');
+        btn.style.backgroundColor = '#eee'; // Visual disabled
         this.guessesLeft--;
 
         if (val === this.targetNumber) {
-            this.endGame('win');
+            // Calculate Reward: 30, 15, 5
+            const rewardTier = this.guessesLeft + 1; // 3 (1st try), 2 (2nd), 1 (3rd)
+            const stars = [5, 15, 30][rewardTier - 1];
+
+            this.endGameCustom('win', stars, stars / 2); // Custom reward
         } else {
             if (this.guessesLeft === 0) {
                 this.ui.gameStatus.innerText = `¡Perdiste! Era el ${this.targetNumber}`;
                 this.endGame('lose');
             } else {
                 const hint = val < this.targetNumber ? '¡Es más alto! ⬆️' : '¡Es más bajo! ⬇️';
-                this.ui.gameStatus.innerText = `${hint} (Quedan ${this.guessesLeft})`;
+                this.ui.gameStatus.innerText = `${hint}`;
+                setTimeout(() => this.updateGuessStatus(), 1500);
             }
         }
+    }
+
+    endGameCustom(result, stars, xp) {
+        // Duplicating core endGame logic to allow custom rewards
+        this.ui.gameStatus.innerText = `¡Ganaste! 🎉 (+${stars} ⭐)`;
+        this.game.stats.stars += stars;
+        this.game.gainXP(xp);
+        this.game.updateUI();
+        this.game.saveState();
+        this.game.animatePet('bounce');
     }
 }
 
