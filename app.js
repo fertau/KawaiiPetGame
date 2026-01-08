@@ -8,23 +8,23 @@ class KawaiiPetGame {
         this.pets = [
             {
                 id: 0, name: 'Conejito', img: 'assets/pet_idle.png', description: 'Un conejito rosado muy tierno.',
-                actions: { eating: 'assets/pet_eating.png', playing: 'assets/pet_playing.png', sleeping: 'assets/pet_sleeping.png', cleaning: 'assets/pet_cleaning.png' }
+                actions: { eating: 'assets/pet_eating.png', playing: 'assets/pet_playing.png', sleeping: 'assets/pet_sleeping.png', cleaning: 'assets/pet_bathing.png' }
             },
             {
                 id: 1, name: 'Gatito', img: 'assets/kitty_idle.png', description: 'Un gatito curioso.',
-                actions: { eating: 'assets/kitty_eating.png', playing: 'assets/kitty_playing.png', sleeping: 'assets/kitty_sleeping.png', cleaning: 'assets/kitty_cleaning.png' }
+                actions: { eating: 'assets/kitty_eating.png', playing: 'assets/kitty_playing.png', sleeping: 'assets/kitty_sleeping.png', cleaning: 'assets/kitty_bathing.png' }
             },
             {
                 id: 2, name: 'Perrito', img: 'assets/doggy_idle.png', description: 'Un perrito fiel.',
-                actions: { eating: 'assets/doggy_eating.png', playing: 'assets/doggy_playing.png', sleeping: 'assets/doggy_sleeping.png', cleaning: 'assets/doggy_cleaning.png' }
+                actions: { eating: 'assets/doggy_eating.png', playing: 'assets/doggy_playing.png', sleeping: 'assets/doggy_sleeping.png', cleaning: 'assets/doggy_bathing.png' }
             },
             {
                 id: 3, name: 'Zorrito', img: 'assets/fox_idle.png', description: 'Un zorrito astuto.',
-                actions: { eating: 'assets/fox_eating.png', playing: 'assets/fox_playing.png', sleeping: 'assets/fox_sleeping.png', cleaning: 'assets/fox_cleaning.png' }
+                actions: { eating: 'assets/fox_eating.png', playing: 'assets/fox_playing.png', sleeping: 'assets/fox_sleeping.png', cleaning: 'assets/fox_bathing.png' }
             },
             {
                 id: 4, name: 'Panda', img: 'assets/panda_idle.png', description: 'Un panda relajado.',
-                actions: { eating: 'assets/panda_eating.png', playing: 'assets/panda_playing.png', sleeping: 'assets/panda_sleeping.png', cleaning: 'assets/panda_cleaning.png' }
+                actions: { eating: 'assets/panda_eating.png', playing: 'assets/panda_playing.png', sleeping: 'assets/panda_sleeping.png', cleaning: 'assets/panda_bathing.png' }
             }
         ];
 
@@ -361,13 +361,16 @@ class KawaiiPetGame {
         if (currentPet && currentPet.actions && currentPet.actions[actionKey]) {
             this.ui.petImg.src = currentPet.actions[actionKey];
 
-            // If not sleeping, return to idle after animation
-            if (actionKey !== 'sleeping') {
-                setTimeout(() => {
-                    const latestPet = this.pets.find(p => p.id === this.stats.currentPetId);
-                    this.ui.petImg.src = latestPet.img;
-                }, 2000); // 2 seconds for action
-            }
+            // If sleeping, let the state handle the image (don't revert)
+            if (actionKey === 'sleeping') return;
+
+            // For other actions, wait 3 seconds then revert
+            this.isAnimatingAction = true;
+            setTimeout(() => {
+                this.isAnimatingAction = false;
+                this.ui.petContainer.className = 'pet idle-breathe'; // Stop animation loop
+                this.updateUI(); // Will revert to idle if not sleeping
+            }, 3000); // 3 seconds for action
         }
     }
 
@@ -382,9 +385,22 @@ class KawaiiPetGame {
         // Update Pet Image
         const currentPet = this.pets.find(p => p.id === this.stats.currentPetId);
         if (currentPet) {
-            const currentSrc = this.ui.petImg.getAttribute('src');
-            if (!currentSrc || !currentSrc.includes(currentPet.img)) {
-                this.ui.petImg.src = currentPet.img;
+            // Priority 1: If Sleeping, force sleeping image
+            if (this.isSleeping && currentPet.actions && currentPet.actions.sleeping) {
+                const sleepSrc = currentPet.actions.sleeping;
+                if (!this.ui.petImg.getAttribute('src').includes(sleepSrc)) {
+                    this.ui.petImg.src = sleepSrc;
+                }
+                return;
+            }
+
+            // Priority 2: If Animating (eating, playing, cleaning), don't interrupt
+            if (this.isAnimatingAction) return;
+
+            // Priority 3: Default to Idle
+            const idleSrc = currentPet.img;
+            if (!this.ui.petImg.getAttribute('src').includes(idleSrc)) {
+                this.ui.petImg.src = idleSrc;
             }
         }
 
