@@ -206,7 +206,6 @@ class KawaiiPetGame {
         document.getElementById('btn-camera').addEventListener('click', () => this.takePhoto());
         document.getElementById('btn-album').addEventListener('click', () => this.openPhotoAlbum());
         document.getElementById('photo-close').addEventListener('click', () => document.getElementById('photo-modal').classList.add('hidden'));
-        document.getElementById('btn-games').addEventListener('click', () => this.minigameSystem.openMenu());
     }
 
     startLoop() {
@@ -473,8 +472,8 @@ class KawaiiPetGame {
         flash.classList.add('active');
         setTimeout(() => flash.classList.remove('active'), 200);
 
-        // Capture
-        const element = document.getElementById('pet-container');
+        // Capture - Fixed: use 'pet-character' not 'pet-container'
+        const element = document.getElementById('pet-character');
         html2canvas(element, { backgroundColor: null }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const date = new Date().toLocaleDateString();
