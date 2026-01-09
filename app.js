@@ -749,16 +749,21 @@ loadState() {
     // Load State
     const saved = localStorage.getItem('kawaiiPetSave');
     if (saved) {
-        const parsed = JSON.parse(saved);
-        this.stats = { ...this.stats, ...parsed };
-        // Ensure photos array exists for old saves
-        if (!this.stats.photos) this.stats.photos = [];
-    } if (!this.stats.unlockedStickers) this.stats.unlockedStickers = [0];
+        try {
+            const parsed = JSON.parse(saved);
+            this.stats = { ...this.stats, ...parsed };
+            // Ensure photos array exists for old saves
+            if (!this.stats.photos) this.stats.photos = [];
+        } catch (e) {
+            console.error('Save file corrupt, resetting');
+        }
+    }
+
+    if (!this.stats.unlockedStickers) this.stats.unlockedStickers = [0];
     if (this.stats.stars === undefined) this.stats.stars = this.stats.coins || 50;
     if (this.stats.currentPetId === undefined) this.stats.currentPetId = 0;
     if (this.stats.currentBgId === undefined) this.stats.currentBgId = 'living';
 }
-    }
 }
 
 // Minigame System Class
