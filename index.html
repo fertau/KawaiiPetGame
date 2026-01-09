@@ -39,78 +39,78 @@
                     <span class="star-icon">⭐</span>
                     <span id="star-count">0</span>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button id="btn-camera" class="icon-btn" title="Tomar Foto">📸</button>
-                    <button id="btn-games" class="icon-btn" title="Minijuegos">🎮</button>
-                    <button id="btn-pet-picker" class="icon-btn" title="Cambiar Mascota">🐾</button>
-                    <button id="btn-stickers" class="icon-btn" title="Álbum de Stickers">📒</button>
-                </div>
+                <button id="btn-camera" class="icon-btn" title="Tomar Foto">📸</button>
+                <button id="btn-album" class="icon-btn" title="Álbum de Fotos">🖼️</button>
+                <button id="btn-games" class="icon-btn" title="Minijuegos">🎮</button>
+                <button id="btn-pet-picker" class="icon-btn" title="Cambiar Mascota">🐾</button>
+                <button id="btn-stickers" class="icon-btn" title="Álbum de Stickers">📒</button>
             </div>
-            <div class="xp-bar-container">
-                <div id="xp-bar" class="xp-bar-fill" style="width: 0%"></div>
-            </div>
-        </header>
+    </div>
+    <div class="xp-bar-container">
+        <div id="xp-bar" class="xp-bar-fill" style="width: 0%"></div>
+    </div>
+    </header>
 
-        <main id="pet-area">
-            <div class="environment-bg" id="bg-layer"></div>
-            <div id="pet-character" class="pet bounce">
-                <!-- Pet Image will be injected here -->
-                <img src="assets/pet_idle.png" alt="Pet" id="pet-img"
-                    onerror="this.src='https://placehold.co/200x200?text=Pet'">
-            </div>
+    <main id="pet-area">
+        <div class="environment-bg" id="bg-layer"></div>
+        <div id="pet-character" class="pet bounce">
+            <!-- Pet Image will be injected here -->
+            <img src="assets/pet_idle.png" alt="Pet" id="pet-img"
+                onerror="this.src='https://placehold.co/200x200?text=Pet'">
+        </div>
 
-            <div id="status-effects">
-                <!-- Floating emojis or hearts will appear here -->
-            </div>
-        </main>
+        <div id="status-effects">
+            <!-- Floating emojis or hearts will appear here -->
+        </div>
+    </main>
 
-        <section id="stats-panel">
-            <div class="stat-box">
-                <span class="icon">🍖</span>
-                <div class="bar-container">
-                    <div id="hunger-bar" class="bar-fill hunger" style="width: 80%"></div>
-                </div>
+    <section id="stats-panel">
+        <div class="stat-box">
+            <span class="icon">🍖</span>
+            <div class="bar-container">
+                <div id="hunger-bar" class="bar-fill hunger" style="width: 80%"></div>
             </div>
-            <div class="stat-box">
-                <span class="icon">💖</span>
-                <div class="bar-container">
-                    <div id="happiness-bar" class="bar-fill happiness" style="width: 80%"></div>
-                </div>
+        </div>
+        <div class="stat-box">
+            <span class="icon">💖</span>
+            <div class="bar-container">
+                <div id="happiness-bar" class="bar-fill happiness" style="width: 80%"></div>
             </div>
-            <div class="stat-box">
-                <span class="icon">⚡</span>
-                <div class="bar-container">
-                    <div id="energy-bar" class="bar-fill energy" style="width: 80%"></div>
-                </div>
+        </div>
+        <div class="stat-box">
+            <span class="icon">⚡</span>
+            <div class="bar-container">
+                <div id="energy-bar" class="bar-fill energy" style="width: 80%"></div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <nav id="controls">
-            <button id="btn-feed" class="control-btn">
-                <div class="btn-icon">
-                    <img src="assets/icon_apple.png" alt="Feed">
-                </div>
-                <span>Comer</span>
-            </button>
-            <button id="btn-play" class="control-btn">
-                <div class="btn-icon">
-                    <img src="assets/icon_ball.png" alt="Play">
-                </div>
-                <span>Jugar</span>
-            </button>
-            <button id="btn-sleep" class="control-btn">
-                <div class="btn-icon">
-                    <img src="assets/icon_bed.png" alt="Sleep">
-                </div>
-                <span>Dormir</span>
-            </button>
-            <button id="btn-clean" class="control-btn">
-                <div class="btn-icon">
-                    <img src="assets/icon_soap.png" alt="Clean">
-                </div>
-                <span>Bañar</span>
-            </button>
-        </nav>
+    <nav id="controls">
+        <button id="btn-feed" class="control-btn">
+            <div class="btn-icon">
+                <img src="assets/icon_apple.png" alt="Feed">
+            </div>
+            <span>Comer</span>
+        </button>
+        <button id="btn-play" class="control-btn">
+            <div class="btn-icon">
+                <img src="assets/icon_ball.png" alt="Play">
+            </div>
+            <span>Jugar</span>
+        </button>
+        <button id="btn-sleep" class="control-btn">
+            <div class="btn-icon">
+                <img src="assets/icon_bed.png" alt="Sleep">
+            </div>
+            <span>Dormir</span>
+        </button>
+        <button id="btn-clean" class="control-btn">
+            <div class="btn-icon">
+                <img src="assets/icon_soap.png" alt="Clean">
+            </div>
+            <span>Bañar</span>
+        </button>
+    </nav>
     </div>
 
     <!-- Modal for Stickers -->

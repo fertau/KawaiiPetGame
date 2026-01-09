@@ -103,7 +103,7 @@ class KawaiiPetGame {
             happinessBar: document.getElementById('happiness-bar'),
             energyBar: document.getElementById('energy-bar'),
             xpBar: document.getElementById('xp-bar'),
-            levelText: document.getElementById('level'),
+            levelText: document.getElementById('level-display'),
             starText: document.getElementById('star-count'),
             petImg: document.getElementById('pet-img'),
             petContainer: document.getElementById('pet-character'),
@@ -201,10 +201,12 @@ class KawaiiPetGame {
 
         // Minigames
         this.minigameSystem = new MinigameSystem(this);
-        // Joystick button removed, used btnPlay instead
-        // document.getElementById('btn-games').addEventListener('click', () => {
-        //     this.minigameSystem.openMenu();
-        // });
+
+        // Global Game Buttons
+        document.getElementById('btn-camera').addEventListener('click', () => this.takePhoto());
+        document.getElementById('btn-album').addEventListener('click', () => this.openPhotoAlbum());
+        document.getElementById('photo-close').addEventListener('click', () => document.getElementById('photo-modal').classList.add('hidden'));
+        document.getElementById('btn-games').addEventListener('click', () => this.minigameSystem.openMenu());
     }
 
     startLoop() {
@@ -400,17 +402,6 @@ class KawaiiPetGame {
             ${html}
             <button id="sticker-close" style="margin-top:20px;">Cerrar</button>
         `;
-
-        // Re-bind Close
-        document.getElementById('sticker-close').addEventListener('click', () => this.ui.stickerModal.classList.add('hidden'));
-
-        // Camera & Album
-        document.getElementById('btn-camera').addEventListener('click', () => this.takePhoto());
-        document.getElementById('btn-album').addEventListener('click', () => this.openPhotoAlbum());
-        document.getElementById('photo-close').addEventListener('click', () => document.getElementById('photo-modal').classList.add('hidden'));
-
-        // Minigames
-        document.getElementById('btn-games').addEventListener('click', () => this.minigames.openMenu());
 
         // Bind Buy
         document.getElementById('btn-buy-pack').addEventListener('click', () => this.buyStickerPack());
