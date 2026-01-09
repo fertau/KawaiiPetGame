@@ -413,11 +413,11 @@ class KawaiiPetGame {
             slot.className = `sticker-slot ${sticker.rarity} ${isUnlocked ? 'unlocked' : 'locked'}`;
 
             if (isUnlocked) {
-                slot.innerHTML = `< span class="sticker-icon" > ${sticker.icon}</span > `;
+                slot.innerHTML = `<span class="sticker-icon">${sticker.icon}</span>`;
                 slot.title = `${sticker.name} (${sticker.desc})`;
                 slot.addEventListener('click', () => this.showModal(sticker.name, sticker.desc));
             } else {
-                slot.innerHTML = `< span class="sticker-icon" >🔒</span > `;
+                slot.innerHTML = `<span class="sticker-icon">🔒</span>`;
             }
             grid.appendChild(slot);
         });
