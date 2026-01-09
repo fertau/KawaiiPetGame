@@ -190,13 +190,13 @@ class KawaiiPetGame {
 
         // Splash Button
         this.ui.startBtn.addEventListener('click', () => {
+            this.ui.splashScreen.classList.add('hidden'); // UI Feedback First!
             const name = this.ui.userNameInput.value.trim();
             const pass = this.ui.userPasskeyInput.value.trim();
             if (name && pass) {
                 this.currentUser = { name, pass };
                 this.tryCloudSync();
             }
-            this.ui.splashScreen.classList.add('hidden');
         });
 
         // Minigames
@@ -727,7 +727,12 @@ class KawaiiPetGame {
     }
 
     saveState() {
-        localStorage.setItem('kawaiiPetSave', JSON.stringify(this.stats));
+        try {
+            localStorage.setItem('kawaiiPetSave', JSON.stringify(this.stats));
+        } catch (e) {
+            console.error('Storage full or error saving:', e);
+            this.showModal('Error de Guardado', 'No se pudo guardar localmente. ¿Memoria llena?');
+        }
         if (this.currentUser) this.saveToCloud();
     }
 
