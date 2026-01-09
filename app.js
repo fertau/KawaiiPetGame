@@ -649,12 +649,12 @@ class KawaiiPetGame {
         // In a private app, this would use a more secure lookup
         try {
             console.log('🔄 Sincronizando en la nube...');
-            const response = await fetch(`${this.cloudProvider.url} /${this.cloudProvider.masterBin}/latest`, {
+            const response = await fetch(`${this.cloudProvider.url}/${this.cloudProvider.masterBin}/latest`, {
                 headers: { 'X-Master-Key': this.cloudProvider.apiKey }
             });
             const data = await response.json();
             const users = data.record.users || {};
-            const userKey = `${this.currentUser.name}_${this.currentUser.pass} `;
+            const userKey = `${this.currentUser.name}_${this.currentUser.pass}`;
 
             if (users[userKey]) {
                 // User exists, pull their data
