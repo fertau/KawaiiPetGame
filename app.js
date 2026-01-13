@@ -1,3 +1,109 @@
+class SoundManager {
+    constructor() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.muted = false;
+    }
+
+    toggleMute() {
+        this.muted = !this.muted;
+        if (this.muted) {
+            this.ctx.suspend();
+        } else {
+            this.ctx.resume();
+        }
+        return this.muted;
+    }
+
+    playTone(freq, type, duration, startTime = 0) {
+        if (this.muted) return;
+        // Resume context if suspended (browser autoplay policy)
+        if (this.ctx.state === 'suspended' && !this.muted) this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTime);
+
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(this.ctx.currentTime + startTime);
+        osc.stop(this.ctx.currentTime + startTime + duration);
+    }
+
+    playClick() { this.playTone(800, 'sine', 0.1); }
+    playEat() {
+        this.playTone(300, 'square', 0.1, 0);
+        this.playTone(350, 'square', 0.1, 0.15);
+        this.playTone(300, 'square', 0.1, 0.3);
+    }
+    playSleep() { this.playTone(200, 'sine', 1.0); }
+    playClean() {
+        this.playTone(600, 'triangle', 0.1, 0);
+        this.playTone(700, 'triangle', 0.1, 0.1);
+        this.playTone(800, 'triangle', 0.2, 0.2);
+    }
+    playSuccess() {
+        this.playTone(523.25, 'sine', 0.2, 0); // C5
+        this.playTone(659.25, 'sine', 0.2, 0.2);
+        this.playTone(783.99, 'sine', 0.4, 0.4); // G5
+    }
+    playLevelUp() {
+        this.playTone(523.25, 'square', 0.2, 0);
+        this.playTone(659.25, 'square', 0.2, 0.15);
+        this.playTone(783.99, 'square', 0.2, 0.30);
+        this.playTone(1046.50, 'square', 0.6, 0.45); // C6
+    }
+    playError() { this.playTone(150, 'sawtooth', 0.4); }
+}
+
+class DailyRewardSystem {
+    constructor(game) {
+        this.game = game;
+        this.ui = {
+            modal: document.getElementById('daily-reward-modal'),
+            claimBtn: document.getElementById('btn-claim-reward')
+        };
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        this.ui.claimBtn.addEventListener('click', () => this.claim());
+    }
+
+    check() {
+        const lastLogin = localStorage.getItem('kawaiiLastLogin');
+        const today = new Date().toDateString();
+
+        if (lastLogin !== today) {
+            setTimeout(() => this.show(), 1000); // Small delay for UX
+        }
+    }
+
+    show() {
+        this.game.soundManager.playLevelUp();
+        this.ui.modal.classList.remove('hidden');
+        this.game.spawnParticles('🎁', 10);
+    }
+
+    claim() {
+        this.game.stats.stars += 100;
+        this.game.gainXP(50);
+        this.game.updateUI();
+        this.game.saveState();
+
+        localStorage.setItem('kawaiiLastLogin', new Date().toDateString());
+
+        this.ui.modal.classList.add('hidden');
+        this.game.soundManager.playSuccess();
+        this.game.showModal('¡Recompensa Recibida!', 'Has ganado 100 estrellas y 50 XP.');
+    }
+}
+
 class KawaiiPetGame {
     constructor() {
         this.stats = {
@@ -29,12 +135,12 @@ class KawaiiPetGame {
         ];
 
         this.backgrounds = [
-            { id: 'living', name: 'Sala', img: 'assets/living_background.png' },
-            { id: 'bedroom', name: 'Cuarto', img: 'assets/bedroom_background.png' },
-            { id: 'kitchen', name: 'Cocina', img: 'assets/kitchen_background.png' },
-            { id: 'bathroom', name: 'Baño', img: 'assets/bathroom_background.png' },
-            { id: 'start', name: 'Parque', img: 'assets/playground_background.png' },
-            { id: 'beach', name: 'Playa', img: 'assets/beach_background.png' }
+            { id: 'living', name: 'Sala', img: 'assets/living_background.png', price: 0 },
+            { id: 'bedroom', name: 'Cuarto', img: 'assets/bedroom_background.png', price: 100 },
+            { id: 'kitchen', name: 'Cocina', img: 'assets/kitchen_background.png', price: 100 },
+            { id: 'bathroom', name: 'Baño', img: 'assets/bathroom_background.png', price: 100 },
+            { id: 'start', name: 'Parque', img: 'assets/playground_background.png', price: 250 },
+            { id: 'beach', name: 'Playa', img: 'assets/beach_background.png', price: 500 }
         ];
 
         this.stickers = [
@@ -144,6 +250,8 @@ class KawaiiPetGame {
         };
         this.currentUser = null;
 
+        this.soundManager = new SoundManager();
+        this.dailyRewardSystem = new DailyRewardSystem(this);
         this.init();
     }
 
@@ -188,6 +296,13 @@ class KawaiiPetGame {
             });
         });
 
+        // Mute Button
+        document.getElementById('btn-mute').addEventListener('click', (e) => {
+            const isMuted = this.soundManager.toggleMute();
+            e.target.innerText = isMuted ? '🔇' : '🔊';
+            this.soundManager.playClick();
+        });
+
         // Splash Button
         this.ui.startBtn.addEventListener('click', () => {
             this.ui.splashScreen.classList.add('hidden'); // UI Feedback First!
@@ -197,6 +312,8 @@ class KawaiiPetGame {
                 this.currentUser = { name, pass };
                 this.tryCloudSync();
             }
+            // Check Daily Reward after Splash
+            this.dailyRewardSystem.check();
         });
 
         // Minigames
@@ -230,6 +347,7 @@ class KawaiiPetGame {
     action(type) {
         if (this.isSleeping && type !== 'sleep') {
             this.showModal('¡Shh!', 'Tu mascota está durmiendo.');
+            this.soundManager.playError();
             return;
         }
 
@@ -243,6 +361,8 @@ class KawaiiPetGame {
         if (type === 'play') { /* Earning logic */ }
         else { this.stats.stars -= cost; }
 
+        this.soundManager.playClick();
+
         const animationMap = { 'feed': 'chew', 'play': 'spin', 'sleep': 'breathe', 'clean': 'wobble' };
         const actionImgMap = { 'feed': 'eating', 'play': 'playing', 'sleep': 'sleeping', 'clean': 'cleaning' };
 
@@ -254,6 +374,7 @@ class KawaiiPetGame {
                 this.stats.hunger = Math.min(this.config.maxStats, this.stats.hunger + 15);
                 this.gainXP(15);
                 this.spawnParticles('🍎', 3);
+                this.soundManager.playEat();
                 break;
             case 'play':
                 if (this.stats.energy < 10) {
@@ -271,10 +392,12 @@ class KawaiiPetGame {
                 this.isSleeping = true;
                 this.ui.petContainer.style.opacity = '0.8';
                 this.animatePet('breathe');
+                this.soundManager.playSleep();
                 break;
             case 'clean':
                 this.stats.happiness = Math.min(this.config.maxStats, this.stats.happiness + 5);
                 this.spawnParticles('🫧', 6);
+                this.soundManager.playClean();
                 break;
         }
         this.updateUI();
@@ -300,6 +423,7 @@ class KawaiiPetGame {
         this.config.xpToLevelUp = Math.floor(this.config.xpToLevelUp * 1.5);
         this.checkStickerUnlocks();
         this.showModal('¡Subiste de Nivel!', `Ahora eres nivel ${this.stats.level}`);
+        this.soundManager.playLevelUp();
     }
 
     checkStickerUnlocks() {
@@ -338,6 +462,7 @@ class KawaiiPetGame {
         // Populate Backgrounds
         this.ui.bgGrid.innerHTML = '';
         this.backgrounds.forEach(bg => {
+            const isUnlocked = this.stats.unlockedBackgrounds.includes(bg.id);
             const slot = document.createElement('div');
             slot.className = `sticker-slot ${this.stats.currentBgId === bg.id ? 'selected' : ''}`;
 
@@ -345,14 +470,32 @@ class KawaiiPetGame {
             img.src = bg.img;
             img.onerror = () => { img.src = 'https://placehold.co/100x100?text=' + bg.name; };
             img.style.borderRadius = '5px';
+            if (!isUnlocked) img.style.filter = 'grayscale(100%)';
 
             const name = document.createElement('div');
-            name.innerText = bg.name;
+            name.innerText = isUnlocked ? bg.name : `${bg.price} ⭐`;
             name.style.fontSize = '0.7rem';
             name.style.marginTop = '5px';
+            if (!isUnlocked) name.style.color = '#ff6b6b';
 
-            slot.onclick = () => this.selectBackground(bg.id);
+            slot.onclick = () => {
+                if (isUnlocked) {
+                    this.selectBackground(bg.id);
+                } else {
+                    this.buyBackground(bg);
+                }
+            };
             slot.appendChild(img);
+            if (!isUnlocked) {
+                const lock = document.createElement('div');
+                lock.innerText = '🔒';
+                lock.style.position = 'absolute';
+                lock.style.top = '50%';
+                lock.style.left = '50%';
+                lock.style.transform = 'translate(-50%, -50%)';
+                lock.style.fontSize = '2rem';
+                slot.appendChild(lock);
+            }
             slot.appendChild(name);
             this.ui.bgGrid.appendChild(slot);
         });
@@ -374,12 +517,25 @@ class KawaiiPetGame {
         this.stats.currentBgId = id;
         this.updateUI();
         this.saveState();
+        this.soundManager.playClick();
         // Feedback selection
-        const slots = this.ui.bgGrid.querySelectorAll('.sticker-slot');
-        this.backgrounds.forEach((bg, idx) => {
-            if (slots[idx]) slots[idx].classList.toggle('selected', bg.id === id);
-        });
+        // Re-render to update selection border
+        this.openCustomizationModal();
         this.spawnParticles('✨', 3);
+    }
+
+    buyBackground(bg) {
+        if (this.stats.stars >= bg.price) {
+            this.stats.stars -= bg.price;
+            this.stats.unlockedBackgrounds.push(bg.id);
+            this.saveState();
+            this.soundManager.playSuccess();
+            this.showModal('¡Fondo Desbloqueado!', `Has comprado: ${bg.name}`);
+            this.openCustomizationModal(); // Refresh UI
+        } else {
+            this.soundManager.playError();
+            this.showModal('Faltan Estrellas', `Necesitas ${bg.price} estrellas.`);
+        }
     }
 
     // ... Sticker Album Logic (same as before) ...
@@ -756,7 +912,8 @@ class KawaiiPetGame {
             }
         }
 
-        if (!this.stats.unlockedStickers) this.stats.unlockedStickers = [0];
+        if (this.stats.unlockedStickers === undefined) this.stats.unlockedStickers = [0];
+        if (this.stats.unlockedBackgrounds === undefined) this.stats.unlockedBackgrounds = ['living'];
         if (this.stats.stars === undefined) this.stats.stars = this.stats.coins || 50;
         if (this.stats.currentPetId === undefined) this.stats.currentPetId = 0;
         if (this.stats.currentBgId === undefined) this.stats.currentBgId = 'living';
@@ -842,6 +999,7 @@ class MinigameSystem {
             stars = 20;
             xp = 10;
             this.game.spawnParticles('⭐', 5);
+            this.game.soundManager.playSuccess();
         } else if (result === 'draw') {
             msg = '¡Empate! 🤝';
             stars = 5;
@@ -850,6 +1008,7 @@ class MinigameSystem {
             msg = '¡Perdiste! 😢';
             stars = 2;
             xp = 1;
+            this.game.soundManager.playError();
         }
 
         this.ui.gameStatus.innerText = `${msg} (+${stars} ⭐)`;
@@ -889,6 +1048,7 @@ class MinigameSystem {
         if (!this.tttActive || this.tttBoard[index]) return;
 
         // Player Move
+        this.game.soundManager.playClick();
         this.tttBoard[index] = 'P';
         cell.innerText = '🐾'; // Player Icon
 
@@ -979,6 +1139,7 @@ class MinigameSystem {
     }
 
     handleRPSMove(playerChoice) {
+        this.game.soundManager.playClick();
         const choices = ['rock', 'paper', 'scissors'];
         const cpuChoice = choices[Math.floor(Math.random() * 3)];
 
@@ -1058,6 +1219,7 @@ class MinigameSystem {
     handleGuess(val, btn) {
         if (this.guessesLeft <= 0) return;
 
+        this.game.soundManager.playClick();
         btn.classList.add('disabled');
         btn.style.backgroundColor = '#eee'; // Visual disabled
         this.guessesLeft--;
@@ -1082,6 +1244,7 @@ class MinigameSystem {
 
     endGameCustom(result, stars, xp) {
         // Duplicating core endGame logic to allow custom rewards
+        this.game.soundManager.playSuccess();
         this.ui.gameStatus.innerText = `¡Ganaste! 🎉 (+${stars} ⭐)`;
         this.game.stats.stars += stars;
         this.game.gainXP(xp);

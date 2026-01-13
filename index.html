@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- PWA Config -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffb7b2">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker registered! 😎', reg.scope))
+                    .catch(err => console.log('SW registration failed 😢', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -44,6 +59,7 @@
                     <button id="btn-album" class="icon-btn" title="Álbum de Fotos">🖼️</button>
                     <button id="btn-pet-picker" class="icon-btn" title="Cambiar Mascota">🐾</button>
                     <button id="btn-stickers" class="icon-btn" title="Álbum de Stickers">📒</button>
+                    <button id="btn-mute" class="icon-btn" title="Silenciar Música/SFX">🔊</button>
                 </div>
             </div>
             <div class="xp-bar-container">
@@ -111,6 +127,17 @@
                 <span>Bañar</span>
             </button>
         </nav>
+    </div>
+
+    <!-- Daily Reward Modal -->
+    <div id="daily-reward-modal" class="modal hidden">
+        <div class="modal-content reward-modal" style="text-align:center;">
+            <h2>¡Regalo Diario! 🎁</h2>
+            <div style="font-size:4rem; margin:20px 0;">📅</div>
+            <p>¡Gracias por volver a cuidar a tu mascota!</p>
+            <div style="font-size:2rem; font-weight:bold; color:#ff6b6b; margin:10px 0;">+100 ⭐</div>
+            <button id="btn-claim-reward" class="start-btn">¡Recibir!</button>
+        </div>
     </div>
 
     <!-- Modal for Stickers -->
